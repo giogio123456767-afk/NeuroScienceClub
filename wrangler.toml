@@ -1,0 +1,12 @@
+name = "neuro-gallery"
+compatibility_date = "2024-11-01"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "neuro-gallery"
+database_id = "PASTE_ID_FROM_wrangler_d1_create"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "neuro-papers"

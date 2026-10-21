@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Officers</title><link rel="stylesheet" href="/style.css"></head>
+<body><main>
+<h1>Meet the <b>officers</b></h1>
+<p class="sub">The students who run the club and review every submission.</p>
+<div id="o" class="grid"></div>
+</main>
+<script src="/app.js"></script>
+<script>
+/* ===== EDIT OFFICERS HERE =====
+   img: put photos in /public/images/ (e.g. public/images/president.jpg) and set the path below.
+   Leave img empty ("") to show an initial placeholder. Add/remove rows freely. */
+const OFFICERS=[
+ {name:"Officer Name",role:"President",img:"/images/officer1.jpg",bio:"Short bio goes here."},
+ {name:"Officer Name",role:"Vice President",img:"/images/officer2.jpg",bio:"Short bio goes here."},
+ {name:"Officer Name",role:"Secretary",img:"/images/officer3.jpg",bio:"Short bio goes here."},
+ {name:"Officer Name",role:"Treasurer",img:"/images/officer4.jpg",bio:"Short bio goes here."},
+];
+document.getElementById("o").innerHTML=OFFICERS.map(o=>`<article class="off glass"><div class="ph">${o.img?`<img src="${esc(o.img)}" alt="${esc(o.name)}" onerror="this.parentNode.textContent='${esc(o.name[0]||"?")}'">`:esc(o.name[0]||"?")}</div>
+<h3>${esc(o.name)}</h3><span class="role">${esc(o.role)}</span><p>${esc(o.bio)}</p></article>`).join("");
+</script></body></html>

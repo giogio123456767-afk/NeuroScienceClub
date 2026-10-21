@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Review</title><link rel="stylesheet" href="/style.css"></head>
+<body><main>
+<h1>Admin <b>review</b></h1>
+<form id="lg" class="glass" style="margin-top:28px"><label>Admin password<input id="pw" type="password" autocomplete="current-password" required></label>
+<div id="lm" class="msg"></div><button class="p">Unlock</button></form>
+<div id="panel" hidden>
+<h2>Pending review</h2><div id="pend" class="grid"></div>
+<h2>Published</h2><div id="pub" class="grid"></div>
+<p style="margin-top:28px"><button id="out">Lock</button></p></div>
+</main>
+<script src="/app.js"></script>
+<script>
+const $=id=>document.getElementById(id);let pw=sessionStorage.getItem("pw")||"";
+async function api(body){const r=await fetch("/api/admin",{method:"POST",headers:{"content-type":"application/json","x-admin-password":pw},body:JSON.stringify(body)});
+if(r.status===401)throw new Error("Wrong password");if(!r.ok)throw new Error("Request failed");return r.json()}
+const card=p=>`<article class="card glass"><span class="tag ${p.status=="approved"?"ok":""}">${esc(p.school)}</span><h3>${esc(p.title)}</h3>
+<div class="m">${esc(p.author)}${p.coauthors?" · "+esc(p.coauthors):""}${p.email?"<br>"+esc(p.email):""}</div>
+<div class="acts">${p.file_name?`<a class="btn" target="_blank" href="/api/file/${p.id}?k=${encodeURIComponent(pw)}">File</a>`:""}${p.link?`<a class="btn" target="_blank" rel="noopener noreferrer" href="${esc(p.link)}">Link</a>`:""}
+${p.status!="approved"?`<button class="p" data-a="approve" data-id="${p.id}">Approve</button>`:`<button data-a="unpublish" data-id="${p.id}">Unpublish</button>`}
+<button class="d" data-a="delete" data-id="${p.id}">Delete</button></div></article>`;
+async function load(){const d=await api({action:"list"});$("lg").hidden=true;$("panel").hidden=false;
+const e='<div class="empty glass" style="grid-column:1/-1">Nothing here.</div>';
+const P=d.filter(p=>p.status!="approved"),A=d.filter(p=>p.status=="approved");
+$("pend").innerHTML=P.map(card).join("")||e;$("pub").innerHTML=A.map(card).join("")||e}
+$("lg").onsubmit=async e=>{e.preventDefault();pw=$("pw").value;try{await load();sessionStorage.setItem("pw",pw)}catch(x){$("lm").className="msg er";$("lm").textContent=x.message}};
+$("panel").onclick=async e=>{const b=e.target.closest("button[data-a]");if(!b)return;
+if(b.dataset.a=="delete"&&!confirm("Delete permanently?"))return;
+b.disabled=true;await api({action:b.dataset.a,id:b.dataset.id});load()};
+$("out").onclick=()=>{sessionStorage.removeItem("pw");location.reload()};
+if(pw)load().catch(()=>sessionStorage.removeItem("pw"));
+</script></body></html>
